@@ -1,3 +1,6 @@
+import pytest
+
+from bowling.errors import InvalidRollError
 from bowling.game import BowlingGame, Frame
 from tests.helpers import roll_many, roll_spare, roll_strike
 
@@ -151,3 +154,22 @@ def test_perfect_game_is_complete() -> None:
     roll_many(game, times=12, pins=10)
 
     assert game.is_complete()
+
+
+def test_two_rolls_in_a_frame_cannot_exceed_10_pins() -> None:
+    game = BowlingGame()
+    game.roll(7)
+
+    with pytest.raises(InvalidRollError):
+        game.roll(7)
+
+
+def test_rejected_roll_does_not_change_the_game() -> None:
+    game = BowlingGame()
+    game.roll(7)
+
+    with pytest.raises(InvalidRollError):
+        game.roll(7)
+    game.roll(3)
+
+    assert game.frames()[0].rolls == (7, 3)

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from bowling.errors import InvalidRollError
+
 FRAMES_PER_GAME = 10
 PINS_PER_FRAME = 10
 
@@ -19,6 +21,11 @@ class BowlingGame:
         self._rolls: list[int] = []
 
     def roll(self, pins: int) -> None:
+        if not 0 <= pins <= PINS_PER_FRAME:
+            raise InvalidRollError(f"A roll must knock down 0-{PINS_PER_FRAME} pins, got {pins}")
+        standing = self._pins_standing()
+        if pins > standing:
+            raise InvalidRollError(f"Only {standing} pins are standing, got {pins}")
         self._rolls.append(pins)
 
     def score(self) -> int:
@@ -87,3 +94,19 @@ class BowlingGame:
 
     def _has_rolls(self, frame_start: int, count: int) -> bool:
         return frame_start + count <= len(self._rolls)
+
+    def _pins_standing(self) -> int:
+        frames = self.frames()
+        if not frames:
+            return PINS_PER_FRAME
+        rolls = frames[-1].rolls
+        if len(frames) < FRAMES_PER_GAME:
+            if len(rolls) == 1 and rolls[0] < PINS_PER_FRAME:
+                return PINS_PER_FRAME - rolls[0]
+            return PINS_PER_FRAME
+        pins_down = 0
+        for pins in rolls:
+            pins_down += pins
+            if pins_down == PINS_PER_FRAME:
+                pins_down = 0
+        return PINS_PER_FRAME - pins_down
