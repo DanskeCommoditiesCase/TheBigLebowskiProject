@@ -1,5 +1,5 @@
 from bowling.game import BowlingGame, Frame
-from tests.helpers import roll_spare, roll_strike
+from tests.helpers import roll_many, roll_spare, roll_strike
 
 
 def test_unfinished_game_scores_completed_frames() -> None:
@@ -91,3 +91,63 @@ def test_half_finished_frame_shows_its_roll() -> None:
     game.roll(5)
 
     assert game.frames() == [Frame((3, 4), 7), Frame((5,), None)]
+
+
+def test_new_game_is_not_complete() -> None:
+    assert not BowlingGame().is_complete()
+
+
+def test_game_is_complete_after_open_10th_frame() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=20, pins=0)
+
+    assert game.is_complete()
+
+
+def test_game_is_not_complete_while_10th_frame_spare_waits_for_bonus() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_spare(game)
+
+    assert not game.is_complete()
+
+
+def test_game_is_not_complete_while_10th_frame_strike_waits_for_bonus() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_strike(game)
+    game.roll(5)
+
+    assert not game.is_complete()
+
+
+def test_game_is_complete_after_10th_frame_strike_and_two_bonus_rolls() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_strike(game)
+    game.roll(5)
+    game.roll(4)
+
+    assert game.is_complete()
+
+
+def test_game_is_complete_after_10th_frame_spare_and_bonus_roll() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_spare(game)
+    game.roll(4)
+
+    assert game.is_complete()
+
+
+def test_perfect_game_is_complete() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=12, pins=10)
+
+    assert game.is_complete()

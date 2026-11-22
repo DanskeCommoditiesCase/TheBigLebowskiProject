@@ -43,6 +43,15 @@ class BowlingGame:
             frame_start += size
         return frames
 
+    def is_complete(self) -> bool:
+        frames = self.frames()
+        if len(frames) < FRAMES_PER_GAME:
+            return False
+        last_rolls = frames[-1].rolls
+        if len(last_rolls) == 3:
+            return True
+        return len(last_rolls) == 2 and sum(last_rolls) < PINS_PER_FRAME
+
     def _frame_score(self, frame_start: int) -> int | None:
         if self._is_strike(frame_start):
             if not self._has_rolls(frame_start, 3):
