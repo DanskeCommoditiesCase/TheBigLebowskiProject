@@ -39,3 +39,11 @@ def test_strike_scores() -> None:
     roll_many(game, times=16, pins=0)
 
     assert game.score() == 24
+
+
+def test_perfect_game_scores_300() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=12, pins=10)
+
+    assert game.score() == 300
