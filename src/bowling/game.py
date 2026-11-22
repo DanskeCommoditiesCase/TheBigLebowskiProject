@@ -1,8 +1,11 @@
 class BowlingGame:
     """Scoreboard for a single player's game of ten-pin bowling."""
 
+    def __init__(self):
+        self._rolls: list[int] = []
+
     def roll(self, pins: int) -> None:
-        raise NotImplementedError
+        self._rolls.append(pins)
 
     def score(self) -> int:
-        raise NotImplementedError
+        return 0
