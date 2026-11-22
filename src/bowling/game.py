@@ -15,11 +15,15 @@ class BowlingGame:
         total_score = 0
         frame_start = 0
         for _ in range(FRAMES_PER_GAME):
-            if self._is_spare(frame_start):
+            if self._is_strike(frame_start):
+                total_score = total_score + PINS_PER_FRAME + self._strike_bonus(frame_start)
+                frame_start = frame_start + 1
+            elif self._is_spare(frame_start):
                 total_score = total_score + PINS_PER_FRAME + self._spare_bonus(frame_start)
+                frame_start = frame_start + 2
             else:
                 total_score = total_score + self._pins_in_frame(frame_start)
-            frame_start = frame_start + 2
+                frame_start = frame_start + 2
         return total_score
 
     def _pins_in_frame(self, frame_start: int) -> int:
@@ -31,3 +35,9 @@ class BowlingGame:
 
     def _spare_bonus(self, frame_start: int) -> int:
         return self._rolls[frame_start + 2]
+
+    def _is_strike(self, frame_start: int) -> bool:
+        return self._rolls[frame_start] == PINS_PER_FRAME
+
+    def _strike_bonus(self, frame_start: int) -> int:
+        return self._rolls[frame_start + 1] + self._rolls[frame_start + 2]
