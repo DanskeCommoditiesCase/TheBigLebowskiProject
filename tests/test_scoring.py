@@ -47,3 +47,24 @@ def test_perfect_game_scores_300() -> None:
     roll_many(game, times=12, pins=10)
 
     assert game.score() == 300
+
+
+def test_strike_in_10th_frame_gets_two_bonus_rolls() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_strike(game)
+    roll_strike(game)
+    roll_strike(game)
+
+    assert game.score() == 30
+
+
+def test_spare_in_10th_frame_gets_one_bonus_roll() -> None:
+    game = BowlingGame()
+
+    roll_many(game, times=18, pins=0)
+    roll_spare(game)
+    game.roll(10)
+
+    assert game.score() == 20
