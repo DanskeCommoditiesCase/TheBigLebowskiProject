@@ -8,4 +8,13 @@ class BowlingGame:
         self._rolls.append(pins)
 
     def score(self) -> int:
-        return sum(self._rolls)
+        total_score = 0
+        roll_index = 0
+        for _ in range(10):
+            frame_pins = self._rolls[roll_index] + self._rolls[roll_index + 1]
+            if frame_pins == 10:
+                total_score = total_score + 10 + self._rolls[roll_index + 2]
+            else:
+                total_score = total_score + frame_pins
+            roll_index = roll_index + 2
+        return total_score
