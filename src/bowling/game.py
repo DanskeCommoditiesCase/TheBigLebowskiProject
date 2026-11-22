@@ -22,24 +22,44 @@ class BowlingGame:
         self._rolls.append(pins)
 
     def score(self) -> int:
-        known = [total for total in self.running_totals() if total is not None]
-        return known[-1] if known else 0
+        known_totals = [f.running_total for f in self.frames() if f.running_total is not None]
+        return known_totals[-1] if known_totals else 0
 
-    def running_totals(self) -> list[int | None]:
-        totals: list[int | None] = []
-        total: int | None = 0
+    def frames(self) -> list[Frame]:
+        frames: list[Frame] = []
+        running_total: int | None = 0
         frame_start = 0
-        for _ in range(FRAMES_PER_GAME):
+        for frame_number in range(1, FRAMES_PER_GAME + 1):
             if not self._has_rolls(frame_start, 1):
                 break
             frame_score = self._frame_score(frame_start)
-            if total is None or frame_score is None:
-                total = None
+            if running_total is None or frame_score is None:
+                running_total = None
             else:
-                total += frame_score
-            totals.append(total)
-            frame_start += 1 if self._is_strike(frame_start) else 2
-        return totals
+                running_total += frame_score
+            size = self._frame_size(frame_start, frame_number)
+            rolls = tuple(self._rolls[frame_start : frame_start + size])
+            frames.append(Frame(rolls, running_total))
+            frame_start += size
+        return frames
+
+    def _frame_score(self, frame_start: int) -> int | None:
+        if self._is_strike(frame_start):
+            if not self._has_rolls(frame_start, 3):
+                return None
+            return PINS_PER_FRAME + self._strike_bonus(frame_start)
+        if not self._has_rolls(frame_start, 2):
+            return None
+        if self._is_spare(frame_start):
+            if not self._has_rolls(frame_start, 3):
+                return None
+            return PINS_PER_FRAME + self._spare_bonus(frame_start)
+        return self._pins_in_frame(frame_start)
+
+    def _frame_size(self, frame_start: int, frame_number: int) -> int:
+        if frame_number == FRAMES_PER_GAME:
+            return len(self._rolls) - frame_start
+        return 1 if self._is_strike(frame_start) else 2
 
     def _pins_in_frame(self, frame_start: int) -> int:
         return self._rolls[frame_start] + self._rolls[frame_start + 1]
@@ -58,16 +78,3 @@ class BowlingGame:
 
     def _has_rolls(self, frame_start: int, count: int) -> bool:
         return frame_start + count <= len(self._rolls)
-
-    def _frame_score(self, frame_start: int) -> int | None:
-        if self._is_strike(frame_start):
-            if not self._has_rolls(frame_start, 3):
-                return None
-            return PINS_PER_FRAME + self._strike_bonus(frame_start)
-        if not self._has_rolls(frame_start, 2):
-            return None
-        if self._is_spare(frame_start):
-            if not self._has_rolls(frame_start, 3):
-                return None
-            return PINS_PER_FRAME + self._spare_bonus(frame_start)
-        return self._pins_in_frame(frame_start)
