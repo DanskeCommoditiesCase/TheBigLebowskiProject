@@ -1,6 +1,7 @@
 from bowling.game import BowlingGame
 from tests.helpers import roll_many, roll_spare, roll_strike
 
+
 def test_gutter_game_scores_zero() -> None:
     game = BowlingGame()
 

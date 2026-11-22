@@ -1,5 +1,6 @@
 from bowling.game import BowlingGame
 
+
 def roll_many(game: BowlingGame, times: int, pins: int) -> None:
     for _ in range(times):
         game.roll(pins)
