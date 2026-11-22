@@ -15,6 +15,8 @@ class BowlingGame:
         total_score = 0
         frame_start = 0
         for _ in range(FRAMES_PER_GAME):
+            if frame_start >= len(self._rolls):
+                break
             if self._is_strike(frame_start):
                 total_score = total_score + PINS_PER_FRAME + self._strike_bonus(frame_start)
                 frame_start = frame_start + 1
