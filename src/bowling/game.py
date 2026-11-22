@@ -8,4 +8,4 @@ class BowlingGame:
         self._rolls.append(pins)
 
     def score(self) -> int:
-        return 0
+        return sum(self._rolls)
