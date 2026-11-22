@@ -1,3 +1,7 @@
+FRAMES_PER_GAME = 10
+PINS_PER_FRAME = 10
+
+
 class BowlingGame:
     """Scoreboard for a single player's game of ten-pin bowling."""
 
@@ -9,12 +13,21 @@ class BowlingGame:
 
     def score(self) -> int:
         total_score = 0
-        roll_index = 0
-        for _ in range(10):
-            frame_pins = self._rolls[roll_index] + self._rolls[roll_index + 1]
-            if frame_pins == 10:
-                total_score = total_score + 10 + self._rolls[roll_index + 2]
+        frame_start = 0
+        for _ in range(FRAMES_PER_GAME):
+            if self._is_spare(frame_start):
+                total_score = total_score + PINS_PER_FRAME + self._spare_bonus(frame_start)
             else:
-                total_score = total_score + frame_pins
-            roll_index = roll_index + 2
+                total_score = total_score + self._pins_in_frame(frame_start)
+            frame_start = frame_start + 2
         return total_score
+
+    def _pins_in_frame(self, frame_start: int) -> int:
+        frame_pins = self._rolls[frame_start] + self._rolls[frame_start + 1]
+        return frame_pins
+
+    def _is_spare(self, frame_start: int) -> bool:
+        return self._pins_in_frame(frame_start) == PINS_PER_FRAME
+
+    def _spare_bonus(self, frame_start: int) -> int:
+        return self._rolls[frame_start + 2]
