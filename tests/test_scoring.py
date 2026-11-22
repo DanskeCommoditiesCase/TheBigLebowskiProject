@@ -68,3 +68,12 @@ def test_spare_in_10th_frame_gets_one_bonus_roll() -> None:
     game.roll(10)
 
     assert game.score() == 20
+
+
+def test_example_game_from_case_scores_133() -> None:
+    game = BowlingGame()
+
+    for pins in [1, 4, 4, 5, 6, 4, 5, 5, 10, 0, 1, 7, 3, 6, 4, 10, 2, 8, 6]:
+        game.roll(pins)
+
+    assert game.score() == 133
