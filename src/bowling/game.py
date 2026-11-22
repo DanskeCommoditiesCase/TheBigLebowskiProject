@@ -1,5 +1,15 @@
+from dataclasses import dataclass
+
 FRAMES_PER_GAME = 10
 PINS_PER_FRAME = 10
+
+
+@dataclass(frozen=True)
+class Frame:
+    """One frame on the scoreboard: the pins rolled and the total so far."""
+
+    rolls: tuple[int, ...]
+    running_total: int | None  # None until the frame's bonus rolls are known
 
 
 class BowlingGame:
@@ -12,17 +22,24 @@ class BowlingGame:
         self._rolls.append(pins)
 
     def score(self) -> int:
-        total_score = 0
+        known = [total for total in self.running_totals() if total is not None]
+        return known[-1] if known else 0
+
+    def running_totals(self) -> list[int | None]:
+        totals: list[int | None] = []
+        total: int | None = 0
         frame_start = 0
         for _ in range(FRAMES_PER_GAME):
             if not self._has_rolls(frame_start, 1):
                 break
             frame_score = self._frame_score(frame_start)
-            if frame_score is None:
-                break
-            total_score = total_score + frame_score
-            frame_start = frame_start + 1 if self._is_strike(frame_start) else frame_start + 2
-        return total_score
+            if total is None or frame_score is None:
+                total = None
+            else:
+                total += frame_score
+            totals.append(total)
+            frame_start += 1 if self._is_strike(frame_start) else 2
+        return totals
 
     def _pins_in_frame(self, frame_start: int) -> int:
         return self._rolls[frame_start] + self._rolls[frame_start + 1]
