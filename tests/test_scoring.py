@@ -30,3 +30,15 @@ def test_spare_scores() -> None:
         game.roll(0)
 
     assert game.score() == 16
+
+def test_strike_scores() -> None:
+    game = BowlingGame()
+
+    game.roll(10)  # strike frame 1
+    game.roll(3) # frame 2 roll 1
+    game.roll(4) # frame 2 roll 2
+
+    for _ in range(16):
+        game.roll(0)
+
+    assert game.score() == 24
