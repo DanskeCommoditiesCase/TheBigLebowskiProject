@@ -25,7 +25,7 @@ class BowlingGame:
             elif not self._has_rolls(frame_start, 2):
                 break
             elif self._is_spare(frame_start):
-                if not self._has_rolls(frame_start, 2):
+                if not self._has_rolls(frame_start, 3):
                     break
                 total_score = total_score + PINS_PER_FRAME + self._spare_bonus(frame_start)
                 frame_start = frame_start + 2
